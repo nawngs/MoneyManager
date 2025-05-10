@@ -1,11 +1,13 @@
+import ScreenWrapper from '@/components/ScreenWrapper';
+import Typo from '@/components/Typo';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 const index = () => {
   return (
-    <View>
-      <Text>index</Text>
-    </View>
+    <ScreenWrapper>
+      <Typo>index</Typo>
+    </ScreenWrapper>
   )
 }
 
