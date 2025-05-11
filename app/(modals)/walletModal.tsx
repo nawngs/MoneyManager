@@ -5,6 +5,7 @@ import Input from '@/components/Input'
 import ModalWrapper from '@/components/ModalWrapper'
 import Typo from '@/components/Typo'
 import { colors, spacingX, spacingY } from '@/constants/theme'
+import { useAuth } from '@/contexts/authContext'
 import { CreateorUpdateWallet } from '@/services/walletService'
 import { WalletType } from '@/types'
 import { scale, verticalScale } from '@/utils/styling'
@@ -15,6 +16,7 @@ import { Alert, ScrollView, StyleSheet, View } from 'react-native'
 
 const walletModal = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const {user} = useAuth();
   const [wallet, setWallet] = useState<WalletType>({
     name: "",
   });
@@ -28,6 +30,7 @@ const walletModal = () => {
     }
     const data: WalletType = {
       name,
+      uid: user?.uid,
     };
     setIsLoading(true);
     const res = await CreateorUpdateWallet(data);

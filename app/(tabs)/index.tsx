@@ -6,7 +6,7 @@ import { StyleSheet } from 'react-native';
 
 const index = () => {
   const {user} = useAuth();
-  console.log(user);
+  // console.log(user);
   return (
     <ScreenWrapper>
       <Typo>index</Typo>
