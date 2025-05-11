@@ -14,23 +14,22 @@ import { Alert, Pressable, StyleSheet, View } from 'react-native'
 const Login = () => {
   const emailRef = useRef("");
   const passwordRef = useRef("");
-  const nameRef = useRef("");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const {register: registerUser} = useAuth();
+  const {login: loginUser} = useAuth();
 
-  const handleSignup = async ()=>{
+  const handleLogin = async ()=>{
     if (!emailRef.current || !passwordRef.current) {
       Alert.alert('Login', 'Please fill all fields');
       return ;
     }
+    // console.log(emailRef.current, passwordRef.current, "ok");
     setIsLoading(true);
-    const res = await registerUser(emailRef.current, passwordRef.current, nameRef.current);
+    const res = await loginUser(emailRef.current, passwordRef.current);
     setIsLoading(false);
     if (!res.success) {
-      Alert.alert("Sign up", res.msg);
+      Alert.alert("Log In", res.msg);
     }
-
   };
 
   return (
@@ -49,12 +48,6 @@ const Login = () => {
 
           {/* input: email, password */}
           <Input 
-            placeholder='Enter your name'
-            onChangeText={value=>(nameRef.current = value)}
-            icon={<Icons.Envelope size={verticalScale(36)} color={colors.neutral300} />}
-          />
-
-          <Input 
             placeholder='Enter your email'
             onChangeText={value=>(emailRef.current = value)}
             icon={<Icons.Envelope size={verticalScale(36)} color={colors.neutral300} />}
@@ -67,15 +60,16 @@ const Login = () => {
             icon={<Icons.Lock size={verticalScale(36)} color={colors.neutral300} />}
           />
 
-          <Button loading={isLoading} onPress={handleSignup}>
-            <Typo fontWeight={'700'} color={colors.black} size={21}>Register</Typo>
+          <Typo size={14} color={colors.text} style={{alignSelf: 'flex-end'}}>Forgot password?</Typo>
+          <Button loading={isLoading} onPress={handleLogin}>
+            <Typo fontWeight={'700'} color={colors.black} size={21}>Login</Typo>
           </Button>
         </View>
 
         <View style = {styles.footer}>
-          <Typo size={15}>Already have an account?</Typo>
-          <Pressable onPress={()=>router.push('/(auth)/login')}>
-            <Typo size={15} fontWeight={'700'} color={colors.primary}>Log in</Typo>
+          <Typo size={15}>Don't have an account?</Typo>
+          <Pressable onPress={()=>router.push('/(auth)/register')}>
+            <Typo size={15} fontWeight={'700'} color={colors.primary}>Sign up</Typo>
           </Pressable>
         </View>
 

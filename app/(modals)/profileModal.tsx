@@ -5,10 +5,11 @@ import Input from '@/components/Input'
 import ModalWrapper from '@/components/ModalWrapper'
 import Typo from '@/components/Typo'
 import { colors, spacingX, spacingY } from '@/constants/theme'
-import { getItem } from '@/services/dataService'
+import { useAuth } from '@/contexts/authContext'
 import { getProfileImage } from '@/services/imageService'
+import { updateUser } from '@/services/userService'
+import { UserDataType } from '@/types'
 import { scale, verticalScale } from '@/utils/styling'
-import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Image } from 'expo-image'
 import * as ImagePicker from 'expo-image-picker'
 import { useRouter } from 'expo-router'
@@ -17,27 +18,40 @@ import React, { useEffect, useState } from 'react'
 import { Alert, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native'
 
 const profileModal = () => {
-  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const [userImage, setUserImage] = useState<string | null>(null);
-  const [userName, setUserName] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [userData, setUserData] = useState<UserDataType>({
+    name: "",
+    image: null,
+  })
+  const {user, updateUserData } = useAuth();
 
-  useEffect(() => {
-    const fetchImage = async () => {
-      const imageUri = await getItem('image');
-      setUserImage(imageUri);
-    };
-  
-    const fetchName = async () => {
-      const name = await getItem('name');
-      setUserName(name);
-    };
-  
-    fetchName();
-    fetchImage();
-  }, []);
+  useEffect(()=>{
+    setUserData({
+      name: user?.name || "",
+      image: user?.image || null,
+    });
+  }, [user]);
 
-  const handlePickImage = async ()=>{
+  const handleUpdate = async () => {
+    let {name, image} = userData;
+    if (!name.trim()) {
+      Alert.alert("Update User", "please fill all the fields");
+      return ;
+    }
+    setIsLoading(true);
+    const res = await updateUser(user?.uid as string, userData);
+    setIsLoading(false);
+    if (res.success) {
+      updateUserData(user?.uid as string);
+      router.back();
+    }
+    else {
+      Alert.alert("Update User", res.msg);
+    }
+  }
+
+  const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
       aspect: [4, 3],
@@ -47,26 +61,8 @@ const profileModal = () => {
     console.log(result);
 
     if (!result.canceled) {
-      await AsyncStorage.setItem("image", result.assets[0].uri);
-      setUserImage(result.assets[0].uri)
+      setUserData({...userData, image: result.assets[0]});
     }
-  }
-
-  const handleUpdate = async()=>{
-    if (!userName || userName.trim().length == 0) {
-      Alert.alert("User", "please fill all the fields");
-      return ;
-    }
-    try {
-      setIsLoading(true);
-      await AsyncStorage.setItem("name", userName);
-      router.back();
-    } catch (error: any) {
-      console.error("failed to update", error);
-    } finally {
-      setIsLoading(false);
-    }
-
   }
 
   return (
@@ -78,12 +74,12 @@ const profileModal = () => {
           <View style={styles.avatarContainer}>
             <Image
               style={styles.avatar}
-              source={getProfileImage(userImage)}
+              source={getProfileImage(userData.image)}
               contentFit='cover'
               transition={100}
             />
 
-            <TouchableOpacity onPress={handlePickImage} style={styles.editIcon}>
+            <TouchableOpacity onPress={pickImage} style={styles.editIcon}>
                <Icons.Pencil
                 size={verticalScale(20)}
                 color={colors.neutral800}
@@ -93,8 +89,8 @@ const profileModal = () => {
           
           <Input
             placeholder='Name'
-            value={!userName ? '' : userName}
-            onChangeText={setUserName}
+            value={userData.name}
+            onChangeText={(value) => setUserData({...userData, name: value})}
             icon={<Icons.User size={verticalScale(36)} color={colors.neutral300} />}
           />
         </ScrollView>

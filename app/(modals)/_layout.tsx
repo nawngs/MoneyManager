@@ -7,6 +7,10 @@ export default function ModalLayout() {
         name="profileModal"
         options={{ presentation: 'modal', headerShown: false }}
       />
+      <Stack.Screen
+        name="walletModal"
+        options={{ presentation: 'modal', headerShown: false }}
+      />
     </Stack>
   );
 }

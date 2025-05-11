@@ -5,7 +5,7 @@ import { colors, spacingX, spacingY } from '@/constants/theme'
 import { verticalScale } from '@/utils/styling'
 import { useRouter } from 'expo-router'
 import React from 'react'
-import { StyleSheet, View } from 'react-native'
+import { StyleSheet, TouchableOpacity, View } from 'react-native'
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated'
 
 const welcome = () => {
@@ -14,6 +14,11 @@ const welcome = () => {
     <ScreenWrapper>
       <View style={styles.container}>
         {/*login button + image */}
+        <View style={styles.loginButton}>
+          <TouchableOpacity onPress={() => router.push('/(auth)/login')}>
+            <Typo>Sign In</Typo>
+          </TouchableOpacity>
+        </View>
         <View>
           {/* image */}
           <Animated.Image
