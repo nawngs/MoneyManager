@@ -53,11 +53,11 @@ const profile = () => {
   const showResetAlert = () => {
     Alert.alert("Confirm", "Are you sure you want to log out?", [
       {
-        text: 'cancel',
+        text: 'Cancel',
         style: 'cancel',
       },
       {
-        text: 'confirm',
+        text: 'Confirm',
         onPress: () => handleLogOut(),
         style: 'destructive',
       }
